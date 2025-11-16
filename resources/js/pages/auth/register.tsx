@@ -13,8 +13,8 @@ import AuthLayout from '@/layouts/auth-layout';
 export default function Register() {
     return (
         <AuthLayout
-            title="Create an account"
-            description="Enter your details below to create your account"
+            title="Susikurkite paskyrą"
+            description="Įveskite savo duomenis žemiau."
         >
             <Head title="Register" />
             <Form
@@ -27,7 +27,7 @@ export default function Register() {
                     <>
                         <div className="grid gap-6">
                             <div className="grid gap-2">
-                                <Label htmlFor="name">Name</Label>
+                                <Label htmlFor="name">Vardas</Label>
                                 <Input
                                     id="name"
                                     type="text"
@@ -36,16 +36,20 @@ export default function Register() {
                                     tabIndex={1}
                                     autoComplete="name"
                                     name="name"
-                                    placeholder="Full name"
+                                    placeholder="Pilnas vardas"
                                 />
                                 <InputError
-                                    message={errors.name}
+                                    message={
+                                        errors.name
+                                            ? 'Blogai įvesti duomenys'
+                                            : undefined
+                                    }
                                     className="mt-2"
                                 />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">El. paštas</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -53,13 +57,19 @@ export default function Register() {
                                     tabIndex={2}
                                     autoComplete="email"
                                     name="email"
-                                    placeholder="email@example.com"
+                                    placeholder="pavyzdys@example.com"
                                 />
-                                <InputError message={errors.email} />
+                                <InputError
+                                    message={
+                                        errors.email
+                                            ? 'Blogai įvestas el. paštas'
+                                            : undefined
+                                    }
+                                />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">Password</Label>
+                                <Label htmlFor="password">Slaptažodis</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -67,14 +77,20 @@ export default function Register() {
                                     tabIndex={3}
                                     autoComplete="new-password"
                                     name="password"
-                                    placeholder="Password"
+                                    placeholder="Slaptažodis"
                                 />
-                                <InputError message={errors.password} />
+                                <InputError
+                                    message={
+                                        errors.password
+                                            ? 'Įveskite slaptažodį'
+                                            : undefined
+                                    }
+                                />
                             </div>
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    Patvirtinkite slaptažodį
                                 </Label>
                                 <Input
                                     id="password_confirmation"
@@ -83,10 +99,14 @@ export default function Register() {
                                     tabIndex={4}
                                     autoComplete="new-password"
                                     name="password_confirmation"
-                                    placeholder="Confirm password"
+                                    placeholder="Patvirtinkite slaptažodį"
                                 />
                                 <InputError
-                                    message={errors.password_confirmation}
+                                    message={
+                                        errors.password_confirmation
+                                            ? 'Slaptažodžiai nesutampa'
+                                            : undefined
+                                    }
                                 />
                             </div>
 
@@ -97,14 +117,14 @@ export default function Register() {
                                 data-test="register-user-button"
                             >
                                 {processing && <Spinner />}
-                                Create account
+                                Sukurti paskyrą
                             </Button>
                         </div>
 
                         <div className="text-center text-sm text-muted-foreground">
-                            Already have an account?{' '}
+                            Jau turite paskyrą?{' '}
                             <TextLink href={login()} tabIndex={6}>
-                                Log in
+                                Prisijunkite čia.
                             </TextLink>
                         </div>
                     </>

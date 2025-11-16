@@ -1,13 +1,18 @@
+import InputError from '@/components/input-error';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
 import client from '@/routes/client';
+import { Textarea } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
-import React from 'react';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
 
 type Review = {
     id: string;
     title: string;
-    body: string;
+    description: string;
     rating: number;
     createdAt: string;
     user: { name: string };
@@ -53,35 +58,48 @@ function Stars({
 }
 
 export default function Index({ reviews = [] }: Props) {
-    const {
-        data,
-        setData,
-        post: submit,
-    } = useForm({
+    const { data, setData, post, errors, reset } = useForm({
         title: '',
         description: '',
         rating: 0,
     });
-
+    const currentHash = window.location.hash.replace('#', '');
+    const [hash, setHash] = useState(
+        currentHash === 'index' ? '' : `${currentHash}`,
+    );
     const colors = ['#ef4444', '#f97316', '#eab308', '#10b981', '#3b82f6'];
 
-    function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const handleSubmit: React.FormEventHandler = (e) => {
         e.preventDefault();
-        submit(client.forum.store().url, {
+        post(client.forum.store().url, {
             onSuccess: () => {
-                setData('title', '');
-                setData('description', '');
-                setData('rating', 0);
+                reset();
+                setHash('');
+                window.location.hash = '';
+                toast.success('Atsiliepimas sėkmingai išsiųstas');
             },
-            preserveState: false,
+            onError: () => {
+                toast.error('Klaida siunčiant atsiliepimą');
+            },
         });
-    }
+    };
     return (
         <AppLayout>
-            <Tabs className="mt-5" defaultValue="index">
+            <Tabs
+                className="mt-5"
+                defaultValue="index"
+                value={hash === '' ? 'index' : hash}
+                onValueChange={(value) => {
+                    const newHash = value === 'index' ? '' : value;
+                    setHash(newHash);
+                    window.location.hash = newHash;
+                }}
+            >
                 <TabsList>
-                    <TabsTrigger value="index">Reviews</TabsTrigger>
-                    <TabsTrigger value="review">Leave a review</TabsTrigger>
+                    <TabsTrigger value="index">Atsiliepimai</TabsTrigger>
+                    <TabsTrigger value="review">
+                        Palikti atsiliepima
+                    </TabsTrigger>
                 </TabsList>
                 <div
                     style={{
@@ -91,7 +109,7 @@ export default function Index({ reviews = [] }: Props) {
                     }}
                 >
                     <TabsContent value="review">
-                        <h1 style={{ marginBottom: 8 }}>Community Reviews</h1>
+                        <h1 style={{ marginBottom: 8 }}>Atsiliepimai</h1>
                         <p
                             style={{
                                 color: '#6b7280',
@@ -99,8 +117,7 @@ export default function Index({ reviews = [] }: Props) {
                                 marginBottom: 16,
                             }}
                         >
-                            Share your experience and help others with your
-                            review.
+                            Palik atsiliepimą apie mūsų paslaugas.
                         </p>
 
                         <form
@@ -127,20 +144,27 @@ export default function Index({ reviews = [] }: Props) {
                                             color: '#6b7280',
                                         }}
                                     >
-                                        Title
+                                        Pavadinimas
                                     </label>
-                                    <input
+                                    <Input
                                         value={data.title}
                                         onChange={(e) =>
                                             setData('title', e.target.value)
                                         }
-                                        placeholder="Great product, helpful team"
+                                        placeholder="Pavadinimas"
                                         style={{
                                             width: '100%',
                                             padding: '10px 12px',
                                             borderRadius: 6,
                                             border: '1px solid #d1d5db',
                                         }}
+                                    />
+                                    <InputError
+                                        message={
+                                            errors.title
+                                                ? 'Įveskite pavadinimą'
+                                                : undefined
+                                        }
                                     />
                                 </div>
                             </div>
@@ -153,12 +177,19 @@ export default function Index({ reviews = [] }: Props) {
                                         color: '#6b7280',
                                     }}
                                 >
-                                    Rating
+                                    Įvertinimas
                                 </label>
                                 <Stars
                                     value={data.rating}
                                     onSelect={(v) => setData('rating', v)}
                                     interactive
+                                />
+                                <InputError
+                                    message={
+                                        errors.rating
+                                            ? 'Įvertinkinte'
+                                            : undefined
+                                    }
                                 />
                             </div>
 
@@ -170,14 +201,14 @@ export default function Index({ reviews = [] }: Props) {
                                         color: '#6b7280',
                                     }}
                                 >
-                                    Review
+                                    Atsiliepimas
                                 </label>
-                                <textarea
+                                <Textarea
                                     value={data.description}
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
-                                    placeholder="What did you like or dislike? Would you recommend it?"
+                                    placeholder="Kas patiko ar nepatiko?"
                                     rows={5}
                                     style={{
                                         width: '100%',
@@ -187,9 +218,16 @@ export default function Index({ reviews = [] }: Props) {
                                         resize: 'vertical',
                                     }}
                                 />
+                                <InputError
+                                    message={
+                                        errors.description
+                                            ? 'Parašykite komentarą'
+                                            : undefined
+                                    }
+                                />
                             </div>
 
-                            <button
+                            <Button
                                 type="submit"
                                 style={{
                                     background: '#2563eb',
@@ -199,8 +237,8 @@ export default function Index({ reviews = [] }: Props) {
                                     cursor: 'pointer',
                                 }}
                             >
-                                Post review
-                            </button>
+                                Pateikti
+                            </Button>
                         </form>
                     </TabsContent>
                     <TabsContent value="index">
@@ -215,8 +253,8 @@ export default function Index({ reviews = [] }: Props) {
                                         textAlign: 'center',
                                     }}
                                 >
-                                    No reviews yet. Be the first to share your
-                                    thoughts.
+                                    Kol kas nėra paliktų atsiliepimų. Būk
+                                    pirmas.
                                 </div>
                             ) : (
                                 reviews.map((r, i) => {
@@ -267,7 +305,7 @@ export default function Index({ reviews = [] }: Props) {
                                                     whiteSpace: 'pre-wrap',
                                                 }}
                                             >
-                                                {r.body}
+                                                {r.description}
                                             </p>
                                             <div
                                                 style={{

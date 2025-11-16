@@ -14,14 +14,14 @@ import AuthLayout from '@/layouts/auth-layout';
 export default function ForgotPassword({ status }: { status?: string }) {
     return (
         <AuthLayout
-            title="Forgot password"
-            description="Enter your email to receive a password reset link"
+            title="Pamiršote slaptažodį?"
+            description="Įveskite savo el. pašto adresą ir mes išsiųsime jums nuorodą slaptažodžio atstatymui."
         >
-            <Head title="Forgot password" />
+            <Head title="Pamiršote slaptažodį?" />
 
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+                    Nuoroda slaptažodžio atstatymui išsiųsta į jūsų el. paštą.
                 </div>
             )}
 
@@ -30,7 +30,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
                     {({ processing, errors }) => (
                         <>
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">El. paštas</Label>
                                 <Input
                                     id="email"
                                     type="email"
@@ -40,7 +40,13 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     placeholder="email@example.com"
                                 />
 
-                                <InputError message={errors.email} />
+                                <InputError
+                                    message={
+                                        errors.email
+                                            ? 'Blogas nurodytas el. paštas'
+                                            : ''
+                                    }
+                                />
                             </div>
 
                             <div className="my-6 flex items-center justify-start">
@@ -52,7 +58,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
                                     {processing && (
                                         <LoaderCircle className="h-4 w-4 animate-spin" />
                                     )}
-                                    Email password reset link
+                                    Gauti el. pašto slaptažodžio atstatymo
+                                    nuorodą
                                 </Button>
                             </div>
                         </>
@@ -60,8 +67,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
                 </Form>
 
                 <div className="space-x-1 text-center text-sm text-muted-foreground">
-                    <span>Or, return to</span>
-                    <TextLink href={login()}>log in</TextLink>
+                    <span>Arba grįžti</span>
+                    <TextLink href={login()}>prisijungti</TextLink>
                 </div>
             </div>
         </AuthLayout>

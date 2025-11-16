@@ -12,37 +12,25 @@ export default function ViewFaq() {
 
     const faqs: FAQItem[] = [
         {
-            question: 'What is car tuning?',
-            answer: 'Makes your car look nicer.',
-        },
-        {
-            question: 'Will tuning void my warranty?',
-            answer: 'In some cases yes.',
-        },
-        {
-            question: 'How much better looking will my car be?',
-            answer: 'A lot better.',
-        },
-        {
-            question: 'Is tuning safe?',
-            answer: 'If done right, yes.',
+            question: 'Kas yra automobilio tiuningas?',
+            answer: 'Pakeičia jūsų automobilio išvaizdą.',
         },
         {
             question:
-                'Do I need to buy the most expensive option for best results?',
-            answer: 'No matter the choice, we put in a lot of effort.',
+                'Ar turiu pirkti brangiausią variantą, kad pasiekčiau geriausius rezultatus?',
+            answer: 'Nesvarbu, kokį variantą pasirinksite – įdedame daug pastangų.',
         },
         {
-            question: 'How long does tuning take?',
-            answer: 'A few hours to a few weeks.',
+            question: 'Kiek laiko užtrunka tiuningas?',
+            answer: 'Nuo kelių valandų iki kelių savaičių.',
         },
         {
-            question: 'Can I go back to stock?',
-            answer: 'Yes, we can undo the changes.',
+            question: 'Ar galiu grįžti prie standartinės būklės?',
+            answer: 'Taip, galime atkurti pirminius nustatymus.',
         },
         {
-            question: 'Where can I view the options?',
-            answer: 'On the site.',
+            question: 'Kaip padaryti užsakymą?',
+            answer: 'Susisiekite su mumis telefonu +370 6 700 00000 arba el. paštu užsakymas@example.com.',
         },
     ];
 
@@ -56,10 +44,10 @@ export default function ViewFaq() {
                 <div className="mx-auto max-w-4xl">
                     <div className="mb-12 text-center">
                         <h1 className="mb-4 text-4xl font-bold">
-                            Frequently Asked Questions
+                            Dažniausiai užduodami klausimai
                         </h1>
                         <p className="text-lg text-gray-600">
-                            Everything you need to know about car tuning
+                            Viskas, ką reikia žinoti apie mūsų paslaugas.
                         </p>
                     </div>
 

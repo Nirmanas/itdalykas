@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ForumSubmitRequest;
 use App\Http\Resources\ReviewResource;
 use App\Models\Review;
 use Illuminate\Http\Request;
@@ -22,20 +23,15 @@ class ForumController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(ForumSubmitRequest $request)
     {
         $user = $request->user();
-        $validated = $request->validate([
-            'description' => 'required|string',
-            'title' => 'required|string|max:100',
-            'rating' => 'required|integer|min:0|max:5',
-        ]);
 
         Review::create([
             'user_id' => $user->id,
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'rating' => $validated['rating'],
+            'title' => $request->title,
+            'description' => $request->description,
+            'rating' => $request->rating,
         ]);
 
         return redirect()

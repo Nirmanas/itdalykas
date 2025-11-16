@@ -46,7 +46,7 @@ class MakeUserAdmin extends Command
             return 1;
         }
 
-        $user->update(['role' => UserRoles::ADMINISTRATOR]);
+        $user->update(['role' => UserRoles::ADMIN]);
 
         $this->info("User {$user->name} is now an admin!");
         return 0;

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\Admin;
+use App\Http\Middleware\EmployeeOrAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -20,6 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        $middleware->alias([
+            'admin' => Admin::class,
+            'employee_or_admin' => EmployeeOrAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

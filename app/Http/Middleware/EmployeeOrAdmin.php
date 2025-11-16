@@ -7,17 +7,14 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class admin
+class EmployeeOrAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role !== UserRoles::ADMINISTRATOR)
+        if (!$request->user() || !in_array($request->user()->role, [UserRoles::ADMIN, UserRoles::WORKER])) {
             abort(Response::HTTP_FORBIDDEN);
+        }
         return $next($request);
     }
 }
+

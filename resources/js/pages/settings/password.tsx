@@ -15,7 +15,7 @@ import { edit } from '@/routes/user-password';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'Password settings',
+        title: 'Slaptažodžio nustatymai',
         href: edit().url,
     },
 ];
@@ -26,17 +26,14 @@ export default function Password() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password settings" />
+            <Head title="Slaptažodžio nustatymai" />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <HeadingSmall
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
-                    />
+                    <HeadingSmall title="Keisk slaptažodį" />
 
                     <Form
-                        {...PasswordController.update.form()}
+                        {...PasswordController.update()}
                         options={{
                             preserveScroll: true,
                         }}
@@ -61,7 +58,7 @@ export default function Password() {
                             <>
                                 <div className="grid gap-2">
                                     <Label htmlFor="current_password">
-                                        Current password
+                                        Dabartinis slaptažodis
                                     </Label>
 
                                     <Input
@@ -71,17 +68,21 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder="Dabartinis slaptažodis"
                                     />
 
                                     <InputError
-                                        message={errors.current_password}
+                                        message={
+                                            errors.current_password
+                                                ? 'Slaptažodis neteisingas'
+                                                : ''
+                                        }
                                     />
                                 </div>
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password">
-                                        New password
+                                        Naujas slaptažodis
                                     </Label>
 
                                     <Input
@@ -91,15 +92,21 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder="Naujas slaptažodis"
                                     />
 
-                                    <InputError message={errors.password} />
+                                    <InputError
+                                        message={
+                                            errors.password
+                                                ? 'Naujas slaptažodis netinkamas.'
+                                                : ''
+                                        }
+                                    />
                                 </div>
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="password_confirmation">
-                                        Confirm password
+                                        Naujo slaptažodžio patvirtinimas
                                     </Label>
 
                                     <Input
@@ -108,11 +115,15 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder="Patvirtinti slaptažodį"
                                     />
 
                                     <InputError
-                                        message={errors.password_confirmation}
+                                        message={
+                                            errors.password_confirmation
+                                                ? 'Slaptažodžiai nesutampa.'
+                                                : ''
+                                        }
                                     />
                                 </div>
 
@@ -121,7 +132,7 @@ export default function Password() {
                                         disabled={processing}
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        Išsaugoti
                                     </Button>
 
                                     <Transition

@@ -12,7 +12,7 @@ class ReviewResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'body' => $this->description,
+            'description' => $this->description,
             'rating' => $this->rating,
             'createdAt' => $this->created_at->toISOString(),
             'user' => [
