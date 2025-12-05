@@ -39,7 +39,7 @@ class DashboardController extends Controller
         if ($carModelId) {
             $model = CarModel::find($carModelId);
             if ($model) {
-                $details = $model->details()
+                $details = $model->details()->withPivot('coords')
                     ->get()
                     ->map(function ($detail) {
                         return [
@@ -49,6 +49,7 @@ class DashboardController extends Controller
                             'stock' => $detail->stock,
                             'type' => $detail->type->value,
                             'price' => $detail->price,
+                            'coords' => $detail->pivot->coords ?? '',
                         ];
                     });
             }

@@ -23,7 +23,7 @@ import AppLayout from '@/layouts/app-layout';
 import admin from '@/routes/admin';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowLeft } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 interface CarModel {
@@ -55,7 +55,7 @@ export default function CarModelDetails({
     selectedDetailIds,
     errors,
 }: Props) {
-    const { data, post } = useForm({
+    const { data } = useForm({
         detail_ids: selectedDetailIds,
     });
 
@@ -69,14 +69,6 @@ export default function CarModelDetails({
         spoilerTop: '',
         spoilerRight: '',
     });
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-
-        post(admin.carModels.details.update({ carModel: carModel.id }).url, {
-            onSuccess: () => {},
-        });
-    };
 
     const toggleDetail = (detailId: number) => {
         if (data.detail_ids.includes(detailId)) {
@@ -179,7 +171,7 @@ export default function CarModelDetails({
                     <AlertError errors={Object.values(errors)} />
                 )}
 
-                <form onSubmit={submit} className="space-y-6">
+                <form className="space-y-6">
                     {Object.entries(detailsByType).map(([type, details]) => (
                         <div key={type}>
                             <h3 className="mb-4 text-lg font-semibold capitalize">

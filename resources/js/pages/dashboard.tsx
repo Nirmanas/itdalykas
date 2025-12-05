@@ -45,6 +45,7 @@ interface Detail {
     stock: number;
     type: string;
     price: number;
+    coords?: string;
 }
 
 interface DashboardProps {
@@ -62,6 +63,7 @@ export default function Dashboard({
     selectedCarType,
     selectedCarModel,
 }: DashboardProps) {
+    console.log(details);
     const [carType, setCarType] = useState<string>(selectedCarType || '');
     const [carModel, setCarModel] = useState<string>(
         selectedCarModel?.toString() || '',
@@ -94,6 +96,57 @@ export default function Dashboard({
         setCheckedDetails(defaultState);
         router.get('/', { carType, carModel: value }, { preserveState: false });
     };
+
+    const getPositionStyle = (coords: string | undefined, type: string, position: 'left' | 'right' | 'spoiler') => {
+        if (!coords) {
+            // Default positions
+            if (type === 'ratai') {
+                if (position === 'left') {
+                    return { left: '6%', bottom: '23%' };
+                } else if (position === 'right') {
+                    return { right: '9%', bottom: '23%' };
+                }
+            } else if (type === 'aptakas') {
+                return { top: '15%', right: '0%' };
+            }
+            return {};
+        }
+
+        const values = coords.split(',').map(v => v.trim());
+
+        if (type === 'ratai' && values.length >= 4) {
+            // Format: wheel1Left,wheel1Bottom,wheel2Right,wheel2Bottom
+            const [wheel1Left, wheel1Bottom, wheel2Right, wheel2Bottom] = values;
+
+            if (position === 'left') {
+                const leftVal = parseInt(wheel1Left);
+                const bottomVal = parseInt(wheel1Bottom);
+                return {
+                    ...(leftVal >= 0 ? { right: `${leftVal}%` } : { left: `${Math.abs(leftVal)}%` }),
+                    ...(bottomVal >= 0 ? { top: `${bottomVal}%` } : { bottom: `${Math.abs(bottomVal)}%` }),
+                };
+            } else if (position === 'right') {
+                const rightVal = parseInt(wheel2Right);
+                const bottomVal = parseInt(wheel2Bottom);
+                return {
+                    ...(rightVal >= 0 ? { right: `${rightVal}%` } : { left: `${Math.abs(rightVal)}%` }),
+                    ...(bottomVal >= 0 ? { top: `${bottomVal}%` } : { bottom: `${Math.abs(bottomVal)}%` }),
+                };
+            }
+        } else if (type === 'aptakas' && values.length >= 2) {
+            // Format: spoilerTop,spoilerRight
+            const [spoilerTop, spoilerRight] = values;
+            const topVal = parseInt(spoilerTop);
+            const rightVal = parseInt(spoilerRight);
+            return {
+                ...(topVal >= 0 ? { top: `${topVal}%` } : { bottom: `${Math.abs(topVal)}%` }),
+                ...(rightVal >= 0 ? { right: `${rightVal}%` } : { left: `${Math.abs(rightVal)}%` }),
+            };
+        }
+
+        return {};
+    };
+
     return (
         <AppLayout breadcrumbs={[]}>
             <Head title="Dashboard" />
@@ -295,14 +348,20 @@ export default function Dashboard({
 
                         {selectedWheels?.picture_url && (
                             <>
-                                <div className="absolute bottom-[23%] left-[6%] h-[30%] w-[25%]">
+                                <div
+                                    className="absolute h-[30%] w-[25%]"
+                                    style={getPositionStyle(selectedWheels.coords, 'ratai', 'left')}
+                                >
                                     <img
                                         src={selectedWheels.picture_url}
                                         alt="Left wheel"
                                         className="h-full w-full object-contain"
                                     />
                                 </div>
-                                <div className="absolute right-[9%] bottom-[23%] h-[30%] w-[25%]">
+                                <div
+                                    className="absolute h-[30%] w-[25%]"
+                                    style={getPositionStyle(selectedWheels.coords, 'ratai', 'right')}
+                                >
                                     <img
                                         src={selectedWheels.picture_url}
                                         alt="Right wheel"
@@ -313,7 +372,10 @@ export default function Dashboard({
                         )}
 
                         {selectedSpoiler?.picture_url && (
-                            <div className="absolute top-[15%] right-0 h-[30%] w-[25%]">
+                            <div
+                                className="absolute h-[30%] w-[25%]"
+                                style={getPositionStyle(selectedSpoiler.coords, 'aptakas', 'spoiler')}
+                            >
                                 <img
                                     src={selectedSpoiler.picture_url}
                                     alt="Spoiler"
