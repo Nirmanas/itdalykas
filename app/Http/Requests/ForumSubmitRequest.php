@@ -22,9 +22,9 @@ class ForumSubmitRequest extends FormRequest
     public function rules(): array
     {
         return [
-                'description' => 'required|string|min:1',
-                'title' => 'required|string|max:100|min:1',
-                'rating' => 'required|integer|min:0|max:5',
+            'description' => 'required|string|min:1',
+            'title' => 'required|string|max:100|min:1',
+            'rating' => 'required|integer|min:0|max:5',
         ];
     }
 }

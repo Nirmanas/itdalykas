@@ -11,10 +11,10 @@ class EmployeeOrAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !in_array($request->user()->role, [UserRoles::ADMIN, UserRoles::WORKER])) {
+        if (! $request->user() || ! in_array($request->user()->role, [UserRoles::ADMIN, UserRoles::WORKER])) {
             abort(Response::HTTP_FORBIDDEN);
         }
+
         return $next($request);
     }
 }
-

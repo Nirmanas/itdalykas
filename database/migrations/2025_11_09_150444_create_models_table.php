@@ -29,7 +29,6 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->enum('type', DetailType::all());
 
-
         });
         Schema::create('detail_model', function (Blueprint $table) {
             $table->id();

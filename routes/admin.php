@@ -29,4 +29,4 @@ Route::middleware(['employee_or_admin'])
             Route::get('/', [UserController::class, 'index'])->name('users.index');
             Route::patch('/{user}/role', [UserController::class, 'updateRole'])->name('users.update-role');
         });
-});
+    });

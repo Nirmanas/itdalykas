@@ -1,6 +1,5 @@
 <?php
 
-
 use App\Http\Controllers\ForumController;
 
 Route::middleware(['auth', 'verified'])->name('client.')->group(function () {

@@ -16,8 +16,10 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || $request->user()->role !== UserRoles::ADMIN)
+        if (! $request->user() || $request->user()->role !== UserRoles::ADMIN) {
             abort(Response::HTTP_FORBIDDEN);
+        }
+
         return $next($request);
     }
 }

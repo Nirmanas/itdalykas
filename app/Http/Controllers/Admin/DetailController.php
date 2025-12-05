@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers\Admin;
 
 use App\Enums\DetailType;
@@ -19,9 +18,9 @@ class DetailController extends Controller
 
         return Inertia::render('admin/car-details', [
             'details' => $details,
-            'detailTypes' => array_map(fn($case) => [
+            'detailTypes' => array_map(fn ($case) => [
                 'value' => $case->value,
-                'label' => ucfirst($case->value)
+                'label' => ucfirst($case->value),
             ], DetailType::cases()),
         ]);
     }
@@ -32,18 +31,20 @@ class DetailController extends Controller
 
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time().'_'.$file->getClientOriginalName();
             $path = $file->storeAs('details', $filename, 'public');
-            $validated['picture_url'] = '/storage/' . $path;
+            $validated['picture_url'] = '/storage/'.$path;
         }
 
-        Detail::create(['price'=> round($validated['price']), ...$validated]);
+        Detail::create(['price' => round($validated['price']), ...$validated]);
 
         return redirect()->back()->with('success', 'Car model added successfully!');
     }
+
     public function detachFromModel(Detail $detail, CarModel $carModel, Request $request)
     {
         $carModel->attachments()->where('detail_id', $detail->id)->forceDelete();
+
         return back()->with('success', 'Car detail removed.');
     }
 
@@ -51,8 +52,9 @@ class DetailController extends Controller
     {
         $carModel->attachments()->create([
             'detail_id' => $detail->id,
-            'coords' => $request->input('coords', ''),
+            'coords' => $request->string('coordinates', ''),
         ]);
+
         return back()->with('success', 'Car detail added.');
     }
 

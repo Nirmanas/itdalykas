@@ -20,9 +20,9 @@ class CarModelController extends Controller
 
         return Inertia::render('admin/car-models', [
             'carModels' => $carModels,
-            'carTypes' => array_map(fn($case) => [
+            'carTypes' => array_map(fn ($case) => [
                 'value' => $case->value,
-                'label' => ucfirst($case->value)
+                'label' => ucfirst($case->value),
             ], CarType::cases()),
         ]);
     }
@@ -36,9 +36,9 @@ class CarModelController extends Controller
 
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time().'_'.$file->getClientOriginalName();
             $path = $file->storeAs('car-models', $filename, 'public');
-            $validated['picture_url'] = '/storage/' . $path;
+            $validated['picture_url'] = '/storage/'.$path;
         }
 
         CarModel::create($validated);
@@ -91,4 +91,3 @@ class CarModelController extends Controller
         return redirect()->back()->with('success', 'Car model details updated successfully!');
     }
 }
-

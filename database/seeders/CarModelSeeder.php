@@ -42,16 +42,14 @@ class CarModelSeeder extends Seeder
         foreach ($carModels as $model) {
             $relativePath = $model['picture_url'];
 
-                $file = fopen($relativePath, 'r');
-                $filename = time() . '_' . basename($relativePath);
-                Storage::disk('public')->put('car-models/' . $filename, $file);
-                $model['picture_url'] = '/storage/car-models/' . $filename;
-                fclose($file);
+            $file = fopen($relativePath, 'r');
+            $filename = time().'_'.basename($relativePath);
+            Storage::disk('public')->put('car-models/'.$filename, $file);
+            $model['picture_url'] = '/storage/car-models/'.$filename;
+            fclose($file);
 
             CarModel::create($model);
         }
 
-
-        }
+    }
 }
-

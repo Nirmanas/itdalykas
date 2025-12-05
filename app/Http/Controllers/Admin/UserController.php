@@ -19,9 +19,9 @@ class UserController extends Controller
 
         return Inertia::render('admin/users', [
             'users' => $users,
-            'userRoles' => array_map(fn($case) => [
+            'userRoles' => array_map(fn ($case) => [
                 'value' => $case->value,
-                'label' => ucfirst($case->value)
+                'label' => ucfirst($case->value),
             ], UserRoles::cases()),
         ]);
     }
@@ -32,7 +32,7 @@ class UserController extends Controller
     public function updateRole(Request $request, User $user)
     {
         $validated = $request->validate([
-            'role' => 'required|in:' . implode(',', UserRoles::all()),
+            'role' => 'required|in:'.implode(',', UserRoles::all()),
         ]);
 
         $user->update([
@@ -42,4 +42,3 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'User role updated successfully!');
     }
 }
-

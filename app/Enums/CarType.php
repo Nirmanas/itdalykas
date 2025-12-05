@@ -1,10 +1,9 @@
 <?php
 
-
-
 namespace App\Enums;
 
-enum CarType: string{
+enum CarType: string
+{
     case BMW = 'BMW';
     case AUDI = 'audi';
     case MERCEDES = 'mercedes';
@@ -13,8 +12,6 @@ enum CarType: string{
     case FORD = 'ford';
     case FERRARI = 'ferrari';
     case OTHER = 'kita';
-
-
 
     public static function all(): array
     {

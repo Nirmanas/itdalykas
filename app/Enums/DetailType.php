@@ -1,7 +1,7 @@
 <?php
 
-
 namespace App\Enums;
+
 enum DetailType: string
 {
     case WHEEL = 'ratai';
@@ -11,5 +11,4 @@ enum DetailType: string
     {
         return array_column(self::cases(), 'value');
     }
-
 }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\CarType;
 use App\Models\CarModel;
-use App\Models\Detail;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -60,8 +59,7 @@ class DashboardController extends Controller
             'carModels' => $carModels,
             'details' => $details,
             'selectedCarType' => $carType,
-            'selectedCarModel' => $carModelId ? (int)$carModelId : null,
+            'selectedCarModel' => $carModelId ? (int) $carModelId : null,
         ]);
     }
 }
-

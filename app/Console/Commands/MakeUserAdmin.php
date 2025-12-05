@@ -30,6 +30,7 @@ class MakeUserAdmin extends Command
         $users = User::all(['id', 'name', 'email']);
         if ($users->isEmpty()) {
             $this->error('No users found in the database.');
+
             return 1;
         }
 
@@ -41,15 +42,16 @@ class MakeUserAdmin extends Command
 
         $user = User::find($userId);
 
-        if (!$user) {
+        if (! $user) {
             $this->error('User not found.');
+
             return 1;
         }
 
         $user->update(['role' => UserRoles::ADMIN]);
 
         $this->info("User {$user->name} is now an admin!");
+
         return 0;
     }
-
 }

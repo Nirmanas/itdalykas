@@ -15,6 +15,7 @@ class StoreCarModelRequest extends FormRequest
     {
         return true;
     }
+
     public function rules(): array
     {
         return [
@@ -24,4 +25,3 @@ class StoreCarModelRequest extends FormRequest
         ];
     }
 }
-

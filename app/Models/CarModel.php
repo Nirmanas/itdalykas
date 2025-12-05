@@ -32,9 +32,9 @@ class CarModel extends Model
     {
         return $this->belongsToMany(Detail::class, 'detail_model', 'model_id', 'detail_id');
     }
+
     public function attachments(): HasMany
     {
         return $this->hasMany(CarDetail::class, 'model_id');
     }
 }
-
