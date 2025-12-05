@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\CarType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CarModel extends Model
 {
@@ -16,6 +17,8 @@ class CarModel extends Model
         'name',
         'picture_url',
         'type',
+        'detail_id',
+        'coords',
     ];
 
     protected function casts(): array
@@ -28,6 +31,10 @@ class CarModel extends Model
     public function details(): BelongsToMany
     {
         return $this->belongsToMany(Detail::class, 'detail_model', 'model_id', 'detail_id');
+    }
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(CarDetail::class, 'model_id');
     }
 }
 

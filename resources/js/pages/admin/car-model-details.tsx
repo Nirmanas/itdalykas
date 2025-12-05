@@ -14,6 +14,7 @@ import admin from '@/routes/admin';
 import { Head, router, useForm } from '@inertiajs/react';
 import { ArrowLeft, Save } from 'lucide-react';
 import { FormEventHandler } from 'react';
+import { toast } from 'sonner';
 
 interface CarModel {
     id: number;
@@ -28,6 +29,7 @@ interface Detail {
     picture_url: string;
     stock: number;
     type: string;
+    coords?: string;
 }
 
 interface Props {
@@ -56,10 +58,27 @@ export default function CarModelDetails({
     };
 
     const toggleDetail = (detailId: number) => {
-        const newDetailIds = data.detail_ids.includes(detailId)
-            ? data.detail_ids.filter((id) => id !== detailId)
-            : [...data.detail_ids, detailId];
-        setData('detail_ids', newDetailIds);
+        if (data.detail_ids.includes(detailId))
+            router.delete(admin.detailModel.detach({detail: detailId, carModel: carModel.id}).url, {
+                onSuccess: () => {
+                    toast.success('Detalės priskyrimas panaikintas.');
+                    },
+                onError: () => {
+                    toast.error('Nepavyko panaikinti.');
+                },
+                preserveState: false,
+            });
+        else
+            router.post(admin.detailModel.attach({detail: detailId, carModel: carModel.id}).url, {}, {
+                onSuccess: () => {
+                    toast.success('Detalė priskirta.');
+                },
+                onError: () => {
+                    toast.error('Detalės nepavyko priskirti.');
+                },
+                preserveState: false,
+            });
+
     };
 
     const detailsByType = allDetails.reduce(
@@ -162,26 +181,6 @@ export default function CarModelDetails({
                                 Kol kas nėra pridėtų detalių. Pirma pridėkite
                                 detales sistemoje.
                             </p>
-                        </div>
-                    )}
-
-                    {allDetails.length > 0 && (
-                        <div className="flex justify-end gap-2 border-t pt-6">
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={() =>
-                                    router.visit(admin.carModels.index().url)
-                                }
-                            >
-                                Atšaukti
-                            </Button>
-                            <Button type="submit" disabled={processing}>
-                                <Save className="mr-2 h-4 w-4" />
-                                {processing
-                                    ? 'Išsaugoma...'
-                                    : 'Išsaugoti pasirinkimus'}
-                            </Button>
                         </div>
                     )}
                 </form>

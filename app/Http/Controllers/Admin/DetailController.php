@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\DetailType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDetailRequest;
+use App\Models\CarModel;
 use App\Models\Detail;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -39,6 +40,20 @@ class DetailController extends Controller
         Detail::create(['price'=> round($validated['price']), ...$validated]);
 
         return redirect()->back()->with('success', 'Car model added successfully!');
+    }
+    public function detachFromModel(Detail $detail, CarModel $carModel, Request $request)
+    {
+        $carModel->attachments()->where('detail_id', $detail->id)->forceDelete();
+        return back()->with('success', 'Car detail removed.');
+    }
+
+    public function attachToModel(Detail $detail, CarModel $carModel, Request $request)
+    {
+        $carModel->attachments()->create([
+            'detail_id' => $detail->id,
+            'coords' => $request->input('coords', ''),
+        ]);
+        return back()->with('success', 'Car detail added.');
     }
 
     public function update(Detail $detail, Request $request)

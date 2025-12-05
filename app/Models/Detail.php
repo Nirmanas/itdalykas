@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\DetailType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Detail extends Model
 {
@@ -27,7 +28,11 @@ class Detail extends Model
 
     public function models(): BelongsToMany
     {
-        return $this->belongsToMany(CarModel::class, 'detail_model', 'detail_id', 'model_id');
+        return $this
+            ->belongsToMany(CarModel::class,
+                'detail_model',
+                'detail_id',
+                'model_id');
     }
 }
 
