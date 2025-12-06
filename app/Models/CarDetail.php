@@ -15,5 +15,6 @@ class CarDetail extends Pivot
         'detail_id',
         'model_id',
         'coords',
+        'is_default',
     ];
 }

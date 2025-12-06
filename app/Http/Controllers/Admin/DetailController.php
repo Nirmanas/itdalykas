@@ -53,6 +53,7 @@ class DetailController extends Controller
         $carModel->attachments()->create([
             'detail_id' => $detail->id,
             'coords' => $request->string('coordinates', ''),
+            'is_default' => $request->boolean('is_default', false),
         ]);
 
         return back()->with('success', 'Car detail added.');

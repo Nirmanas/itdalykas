@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('detail_model', function (Blueprint $table) {
             $table->string('coords')->nullable();
+            $table->boolean('is_default')->default(false);
         });
     }
 
@@ -22,6 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('detail_model', function (Blueprint $table) {
+            $table->dropColumn('is_default');
             $table->dropColumn('coords');
         });
     }

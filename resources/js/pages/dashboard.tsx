@@ -22,9 +22,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import AppLayout from '@/layouts/app-layout';
+import dashboard from '@/routes/dashboard';
 import { Head, router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface CarType {
     value: string;
@@ -63,11 +65,49 @@ export default function Dashboard({
     selectedCarType,
     selectedCarModel,
 }: DashboardProps) {
-    console.log(details);
     const [carType, setCarType] = useState<string>(selectedCarType || '');
     const [carModel, setCarModel] = useState<string>(
         selectedCarModel?.toString() || '',
     );
+    const [defaultWheels, setDefaultWheels] = useState<{
+        picture_url: string;
+        coords: string;
+    } | null>(null);
+
+    useEffect(() => {
+        const fetchDefaultWheels = async () => {
+            if (!carModel) {
+                setDefaultWheels(null);
+                return;
+            }
+
+            try {
+                const response = await fetch(
+                    dashboard.detail.default({ carModel: parseInt(carModel) })
+                        .url,
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setDefaultWheels(
+                        data
+                            ? {
+                                  picture_url: data.picture_url,
+                                  coords: data.coords,
+                              }
+                            : null,
+                    );
+                } else {
+                    setDefaultWheels(null);
+                }
+            } catch (error) {
+                console.error('Nepavyko rasti tinkamu ratu', error);
+                setDefaultWheels(null);
+            }
+        };
+
+        fetchDefaultWheels();
+    }, [carModel]);
+
     const defaultState = { ratai: -1, aptakas: -1 };
     const [checkedDetails, setCheckedDetails] = useState<{
         [K in 'ratai' | 'aptakas']: number;
@@ -77,9 +117,9 @@ export default function Dashboard({
     const selectedCarModelData = carModels.find(
         (model) => model.id.toString() === carModel,
     );
-    const selectedWheels = details.find(
-        (detail) => detail.id === checkedDetails.ratai,
-    );
+    const selectedWheels =
+        details.find((detail) => detail.id === checkedDetails.ratai) ??
+        defaultWheels;
     const selectedSpoiler = details.find(
         (detail) => detail.id === checkedDetails.aptakas,
     );
@@ -97,8 +137,12 @@ export default function Dashboard({
         router.get('/', { carType, carModel: value }, { preserveState: false });
     };
 
-    const getPositionStyle = (coords: string | undefined, type: string, position: 'left' | 'right' | 'spoiler') => {
-        if (!coords) {
+    const getPositionStyle = (
+        coords: string | undefined,
+        type: string,
+        position: 'left' | 'right' | 'spoiler',
+    ) => {
+        if (coords?.replaceAll(',', '').trim() === '') {
             // Default positions
             if (type === 'ratai') {
                 if (position === 'left') {
@@ -112,25 +156,34 @@ export default function Dashboard({
             return {};
         }
 
-        const values = coords.split(',').map(v => v.trim());
+        const values = coords!.split(',').map((v) => v.trim());
 
         if (type === 'ratai' && values.length >= 4) {
             // Format: wheel1Left,wheel1Bottom,wheel2Right,wheel2Bottom
-            const [wheel1Left, wheel1Bottom, wheel2Right, wheel2Bottom] = values;
+            const [wheel1Left, wheel1Bottom, wheel2Right, wheel2Bottom] =
+                values;
 
             if (position === 'left') {
                 const leftVal = parseInt(wheel1Left);
                 const bottomVal = parseInt(wheel1Bottom);
                 return {
-                    ...(leftVal >= 0 ? { right: `${leftVal}%` } : { left: `${Math.abs(leftVal)}%` }),
-                    ...(bottomVal >= 0 ? { top: `${bottomVal}%` } : { bottom: `${Math.abs(bottomVal)}%` }),
+                    ...(leftVal >= 0
+                        ? { right: `${leftVal}%` }
+                        : { left: `${Math.abs(leftVal)}%` }),
+                    ...(bottomVal >= 0
+                        ? { top: `${bottomVal}%` }
+                        : { bottom: `${Math.abs(bottomVal)}%` }),
                 };
             } else if (position === 'right') {
                 const rightVal = parseInt(wheel2Right);
                 const bottomVal = parseInt(wheel2Bottom);
                 return {
-                    ...(rightVal >= 0 ? { right: `${rightVal}%` } : { left: `${Math.abs(rightVal)}%` }),
-                    ...(bottomVal >= 0 ? { top: `${bottomVal}%` } : { bottom: `${Math.abs(bottomVal)}%` }),
+                    ...(rightVal >= 0
+                        ? { right: `${rightVal}%` }
+                        : { left: `${Math.abs(rightVal)}%` }),
+                    ...(bottomVal >= 0
+                        ? { top: `${bottomVal}%` }
+                        : { bottom: `${Math.abs(bottomVal)}%` }),
                 };
             }
         } else if (type === 'aptakas' && values.length >= 2) {
@@ -139,8 +192,12 @@ export default function Dashboard({
             const topVal = parseInt(spoilerTop);
             const rightVal = parseInt(spoilerRight);
             return {
-                ...(topVal >= 0 ? { top: `${topVal}%` } : { bottom: `${Math.abs(topVal)}%` }),
-                ...(rightVal >= 0 ? { right: `${rightVal}%` } : { left: `${Math.abs(rightVal)}%` }),
+                ...(topVal >= 0
+                    ? { top: `${topVal}%` }
+                    : { bottom: `${Math.abs(topVal)}%` }),
+                ...(rightVal >= 0
+                    ? { right: `${rightVal}%` }
+                    : { left: `${Math.abs(rightVal)}%` }),
             };
         }
 
@@ -330,65 +387,146 @@ export default function Dashboard({
             </div>
 
             <Dialog open={showPreview} onOpenChange={setShowPreview}>
-                <DialogContent className="max-w-4xl">
+                <DialogContent className="max-w-7xl">
                     <DialogHeader>
                         <DialogTitle>Automobilio peržiūra</DialogTitle>
                         <DialogDescription>
-                            Jūsų automobilis su pasirinktomis dalimis
+                            Palyginimas: Prieš ir Po
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="relative mx-auto aspect-video w-full max-w-3xl">
-                        {selectedCarModelData?.picture_url && (
-                            <img
-                                src={selectedCarModelData.picture_url}
-                                alt={selectedCarModelData.name}
-                                className="absolute inset-0 h-full w-full object-contain"
-                            />
-                        )}
-
-                        {selectedWheels?.picture_url && (
-                            <>
-                                <div
-                                    className="absolute h-[30%] w-[25%]"
-                                    style={getPositionStyle(selectedWheels.coords, 'ratai', 'left')}
-                                >
-                                    <img
-                                        src={selectedWheels.picture_url}
-                                        alt="Left wheel"
-                                        className="h-full w-full object-contain"
-                                    />
+                    <Tabs>
+                        <TabsList>
+                            <TabsTrigger value="before">Prieš</TabsTrigger>
+                            <TabsTrigger value="after">Po</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="before" className="h-auto w-auto">
+                            <div className="space-y-2">
+                                <div className="relative aspect-video w-full rounded-lg border bg-neutral-50 p-2 dark:bg-neutral-900">
+                                    {selectedCarModelData?.picture_url && (
+                                        <img
+                                            src={
+                                                selectedCarModelData.picture_url
+                                            }
+                                            alt={selectedCarModelData.name}
+                                            className="absolute inset-0 h-full w-full object-contain p-2"
+                                        />
+                                    )}
+                                    {defaultWheels?.picture_url && (
+                                        <>
+                                            <div
+                                                className="absolute h-[30%] w-[25%]"
+                                                style={getPositionStyle(
+                                                    defaultWheels.coords,
+                                                    'ratai',
+                                                    'left',
+                                                )}
+                                            >
+                                                <img
+                                                    src={
+                                                        defaultWheels.picture_url
+                                                    }
+                                                    alt="Default left wheel"
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            </div>
+                                            <div
+                                                className="absolute h-[30%] w-[25%]"
+                                                style={getPositionStyle(
+                                                    defaultWheels.coords,
+                                                    'ratai',
+                                                    'right',
+                                                )}
+                                            >
+                                                <img
+                                                    src={
+                                                        defaultWheels.picture_url
+                                                    }
+                                                    alt="Default right wheel"
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                                <div
-                                    className="absolute h-[30%] w-[25%]"
-                                    style={getPositionStyle(selectedWheels.coords, 'ratai', 'right')}
-                                >
-                                    <img
-                                        src={selectedWheels.picture_url}
-                                        alt="Right wheel"
-                                        className="h-full w-full object-contain"
-                                    />
-                                </div>
-                            </>
-                        )}
-
-                        {selectedSpoiler?.picture_url && (
-                            <div
-                                className="absolute h-[30%] w-[25%]"
-                                style={getPositionStyle(selectedSpoiler.coords, 'aptakas', 'spoiler')}
-                            >
-                                <img
-                                    src={selectedSpoiler.picture_url}
-                                    alt="Spoiler"
-                                    className="h-full w-full object-contain"
-                                />
                             </div>
-                        )}
-                    </div>
+                        </TabsContent>
+                        <TabsContent value="after">
+                            <div className="space-y-2">
+                                <div className="relative aspect-video w-full rounded-lg border bg-neutral-50 p-2 dark:bg-neutral-900">
+                                    {selectedCarModelData?.picture_url && (
+                                        <img
+                                            src={
+                                                selectedCarModelData.picture_url
+                                            }
+                                            alt={selectedCarModelData.name}
+                                            className="absolute inset-0 h-full w-full object-contain p-2"
+                                        />
+                                    )}
+
+                                    {selectedWheels?.picture_url && (
+                                        <>
+                                            <div
+                                                className="absolute h-[30%] w-[25%]"
+                                                style={getPositionStyle(
+                                                    selectedWheels.coords,
+                                                    'ratai',
+                                                    'left',
+                                                )}
+                                            >
+                                                <img
+                                                    src={
+                                                        selectedWheels.picture_url
+                                                    }
+                                                    alt="Left wheel"
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            </div>
+                                            <div
+                                                className="absolute h-[30%] w-[25%]"
+                                                style={getPositionStyle(
+                                                    selectedWheels.coords,
+                                                    'ratai',
+                                                    'right',
+                                                )}
+                                            >
+                                                <img
+                                                    src={
+                                                        selectedWheels.picture_url
+                                                    }
+                                                    alt="Right wheel"
+                                                    className="h-full w-full object-contain"
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {selectedSpoiler?.picture_url && (
+                                        <div
+                                            className="absolute h-[30%] w-[25%]"
+                                            style={getPositionStyle(
+                                                selectedSpoiler.coords,
+                                                'aptakas',
+                                                'spoiler',
+                                            )}
+                                        >
+                                            <img
+                                                src={
+                                                    selectedSpoiler.picture_url
+                                                }
+                                                alt="Spoiler"
+                                                className="h-full w-full object-contain"
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </TabsContent>
+                    </Tabs>
 
                     <div className="mt-4 space-y-2 rounded-lg bg-neutral-50 p-4 dark:bg-neutral-900">
                         <h3 className="font-semibold">Pasirinktos dalys:</h3>
                         <ul className="space-y-1 text-sm">
-                            {selectedWheels && (
+                            {selectedWheels && 'name' in selectedWheels && (
                                 <li className="flex justify-between">
                                     <span>{selectedWheels.name}</span>
                                     <span className="font-semibold">
@@ -410,7 +548,9 @@ export default function Dashboard({
                                     </span>
                                 </li>
                             )}
-                            {(selectedWheels || selectedSpoiler) && (
+                            {((selectedWheels &&
+                                selectedWheels !== defaultWheels) ||
+                                selectedSpoiler) && (
                                 <li className="flex justify-between border-t pt-2 font-bold">
                                     <span>Viso:</span>
                                     <span>
@@ -418,7 +558,10 @@ export default function Dashboard({
                                             style: 'currency',
                                             currency: 'EUR',
                                         }).format(
-                                            (selectedWheels?.price || 0) +
+                                            (selectedWheels &&
+                                            'price' in selectedWheels
+                                                ? selectedWheels?.price
+                                                : 0) +
                                                 (selectedSpoiler?.price || 0),
                                         )}
                                     </span>

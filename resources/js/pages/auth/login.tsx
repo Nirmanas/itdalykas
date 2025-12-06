@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/auth-layout';
 import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { Form, Head } from '@inertiajs/react';
+import login, { store } from '@/routes/login';
+import { Form, Head, router } from '@inertiajs/react';
 
 interface LoginProps {
     status?: string;
@@ -17,6 +17,22 @@ interface LoginProps {
 }
 
 export default function Login({ status, canRegister }: LoginProps) {
+    const prisijungimai = {
+        klientas: { email: 'klientas@gmail.com', password: 'klientas' },
+        darbuotojas: {
+            email: 'darbuotojas@gmail.com',
+            password: 'darbuotojas',
+        },
+        administratorius: {
+            email: 'adminas@gmail.com',
+            password: 'adminas',
+        },
+    };
+    const handleSubmit = (userType: keyof typeof prisijungimai) => {
+        const { email, password } = prisijungimai[userType];
+        router.post(login.store().url, { email, password, remember: true });
+    };
+
     return (
         <AuthLayout
             title="Prisijungti"
@@ -109,7 +125,27 @@ export default function Login({ status, canRegister }: LoginProps) {
                     </>
                 )}
             </Form>
-
+            <label>Prisijungti kaip:</label>
+            <div className="flex flex-row gap-5">
+                <Button
+                    className="bg-slate-300"
+                    onClick={() => handleSubmit('administratorius')}
+                >
+                    Administratorius
+                </Button>
+                <Button
+                    className="bg-slate-500"
+                    onClick={() => handleSubmit('darbuotojas')}
+                >
+                    Darbuotojas
+                </Button>
+                <Button
+                    className="bg-slate-700"
+                    onClick={() => handleSubmit('klientas')}
+                >
+                    Klientas
+                </Button>
+            </div>
             {status && (
                 <div className="mb-4 text-center text-sm font-medium text-green-600">
                     {status}

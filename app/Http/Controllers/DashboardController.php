@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\CarType;
+use App\Enums\DetailType;
 use App\Models\CarModel;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -62,5 +63,28 @@ class DashboardController extends Controller
             'selectedCarType' => $carType,
             'selectedCarModel' => $carModelId ? (int) $carModelId : null,
         ]);
+    }
+    public function getDefaultDetail(CarModel $carModel, Request $request){
+        $defaultDetail = $carModel->details()
+            ->withPivot(['coords', 'is_default'])
+            ->where('type', DetailType::WHEEL)
+            ->wherePivot('is_default', true)
+            ->first();
+        if ($defaultDetail) {
+            return response()->json([
+                'picture_url' => $defaultDetail->picture_url,
+                'coords' => $defaultDetail->pivot->coords ?? '',
+            ]);
+        }
+        $nextDetail = $carModel->details()->withPivot('coords')
+            ->where('type', DetailType::WHEEL)
+            ->first();
+        if ($nextDetail) {
+            return response()->json([
+                'picture_url' => $nextDetail->picture_url,
+                'coords' => $nextDetail->pivot->coords ?? '',
+            ]);
+        }
+        return response()->json(null, 404);
     }
 }

@@ -19,6 +19,7 @@ class CarModel extends Model
         'type',
         'detail_id',
         'coords',
+        'is_default',
     ];
 
     protected function casts(): array

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\Admin;
+use App\Http\Middleware\ClientWare;
 use App\Http\Middleware\EmployeeOrAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => Admin::class,
             'employee_or_admin' => EmployeeOrAdmin::class,
+            'clientware' => ClientWare::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

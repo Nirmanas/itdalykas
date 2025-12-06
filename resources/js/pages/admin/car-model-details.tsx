@@ -101,7 +101,7 @@ export default function CarModelDetails({
             setShowPositionDialog(true);
         }
     };
-
+    const [isDefault, setIsDefault] = useState(false);
     const handlePositionSubmit = () => {
         if (!selectedDetail) return;
 
@@ -111,13 +111,27 @@ export default function CarModelDetails({
         } else if (selectedDetail.type === 'aptakas') {
             coords = `${positions.spoilerTop},${positions.spoilerRight}`;
         }
+        const values = coords.split(',').map((coord) => coord.trim());
+        if (values.some((value) => value === '')) {
+            toast.error('Prašome užpildyti visas pozicijų reikšmes.');
+            return;
+        }
+        const regex = /^-?\d+\.?\d*$/;
+        for (const value of values) {
+            if (!regex.test(value)) {
+                toast.error(
+                    'Pozicijų formatas neteisingas. Naudokite tik skaičius ir taškus.',
+                );
+                return;
+            }
+        }
 
         router.post(
             admin.detailModel.attach({
                 detail: selectedDetail.id,
                 carModel: carModel.id,
             }).url,
-            { coordinates: coords },
+            { coordinates: coords, is_default: isDefault },
             {
                 onSuccess: () => {
                     toast.success('Detalė priskirta.');
@@ -249,6 +263,19 @@ export default function CarModelDetails({
                             Naudokite teigiamus skaičius dešinei/viršui,
                             neigiamus kairei/apačiai.
                         </DialogDescription>
+                        <div className="flex flex-row items-center gap-2">
+                            <Checkbox
+                                checked={isDefault}
+                                onCheckedChange={() => setIsDefault(!isDefault)}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
+                            />
+                            <p className="text-sm font-light text-muted-foreground">
+                                Padaryti šią detalę numatytaja šio modelio
+                                detale.
+                            </p>
+                        </div>
                     </DialogHeader>
 
                     <div className="relative mx-auto aspect-video w-full max-w-3xl">
